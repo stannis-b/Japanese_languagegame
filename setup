@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "== Installing gems =="
+bundle install
+
+echo "== Preparing database =="
+bin/rails db:create db:migrate db:seed
+
+echo "Setup complete! Run: bin/rails server"

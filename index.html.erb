@@ -1,0 +1,24 @@
+class Word < ApplicationRecord
+  # group: 1〜4 (그룹), pos: "v" / "adj" / "n" / "n/v"
+
+  # Normalizes a string for comparison: strips whitespace, downcases,
+  # and removes internal spaces so "a ka i ru" == "akairu".
+  def self.normalize(str)
+    str.to_s.strip.downcase.gsub(/\s+/, "")
+  end
+
+  # korean_meaning may hold several acceptable answers separated by commas,
+  # e.g. "싫증 나다, 물리다". Any one of them is accepted.
+  def acceptable_korean_answers
+    korean_meaning.to_s.split(",").map(&:strip).reject(&:blank?)
+  end
+
+  def romaji_correct?(input)
+    self.class.normalize(input) == self.class.normalize(romaji)
+  end
+
+  def korean_correct?(input)
+    normalized_input = self.class.normalize(input)
+    acceptable_korean_answers.any? { |ans| self.class.normalize(ans) == normalized_input }
+  end
+end
